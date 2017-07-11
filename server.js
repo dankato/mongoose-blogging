@@ -64,7 +64,7 @@ app.get('/posts', (req, res) => {
 });
 
 app.get('/hello', (req,res) => {
-  res.send('hello world');
+  res.send('I need food');
 })
 
 app.get('/posts/:id', (req, res) => {
