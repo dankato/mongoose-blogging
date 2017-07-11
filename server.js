@@ -40,8 +40,7 @@ app.get('/restaurants', (req, res) => {
     });
 });
 
-<<<<<<< HEAD
-=======
+
 app.get('/posts', (req, res) => {
   Post
     .find()
@@ -53,7 +52,6 @@ app.get('/posts', (req, res) => {
   
 });
 
->>>>>>> bf82c02a8942dcc5b29aabb524d6f638d86180ad
 // can also request by ID
 app.get('/restaurants/:id', (req, res) => {
   Restaurant
