@@ -40,6 +40,17 @@ app.get('/restaurants', (req, res) => {
     });
 });
 
+app.get('/posts', (req, res) => {
+  Post
+    .find()
+    .limit(4)
+    .exec()
+    .then(posts => {
+      res.json('postman asdf');
+    });
+  
+});
+
 // can also request by ID
 app.get('/restaurants/:id', (req, res) => {
   Restaurant
