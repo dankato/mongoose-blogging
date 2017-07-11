@@ -48,7 +48,7 @@ app.get('/posts', (req, res) => {
     .find()
     .exec()
     .then(posts => {
-      res.json({msg: 'hello will!'})
+      res.json(posts)
       // res.json({
       //   posts: posts.map((post, i) => {console.log(i);})
       // });
