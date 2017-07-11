@@ -63,6 +63,9 @@ app.get('/posts', (req, res) => {
 
 });
 
+app.get('/hello', (req,res) => {
+  res.send('hello world');
+})
 
 app.get('/posts/:id', (req, res) => {
   Post
