@@ -11,6 +11,7 @@ mongoose.Promise = global.Promise;
 const { PORT, DATABASE_URL } = require('./config');
 const { Restaurant } = require('./models');
 const { Post } = require('./models');
+// console.log(Post);
 const app = express();
 app.use(bodyParser.json());
 
@@ -42,24 +43,32 @@ app.get('/restaurants', (req, res) => {
 
 
 app.get('/posts', (req, res) => {
+    console.log(':/  ?');
   Post
     .find()
-    .limit(4)
     .exec()
     .then(posts => {
       res.json({
-        posts: posts.map(
-          (post) => post.apiRepr()
-        )
-      })
-        .catch(
-        err => {
-          console.log(err);
-          res.status(500).json({ message: 'You broke it' })
-        }
-        );
+        posts: posts.map((post, i) => {console.log(i);})
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({error: 'something went :/'});
     });
 
+});
+
+
+app.get('/posts/:id', (req, res) => {
+  Post
+    .find()
+    .exec()
+    .then(post => res.json(post.apiRepr()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({error: 'something went :/'});
+    });
 });
 
 // can also request by ID
@@ -72,7 +81,7 @@ app.get('/restaurants/:id', (req, res) => {
     .then(restaurant => res.json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: 'Internal server error' })
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -83,7 +92,7 @@ app.post('/restaurants', (req, res) => {
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
+      const message = `Missing \`${field}\` in request body`;
       console.error(message);
       return res.status(400).send(message);
     }
@@ -194,6 +203,6 @@ function closeServer() {
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
   runServer().catch(err => console.error(err));
-};
+}
 
 module.exports = { app, runServer, closeServer };
