@@ -43,14 +43,15 @@ app.get('/restaurants', (req, res) => {
 
 
 app.get('/posts', (req, res) => {
-    console.log(':/  ?');
+    console.log('Will Version');
   Post
     .find()
     .exec()
     .then(posts => {
-      res.json({
-        posts: posts.map((post, i) => {console.log(i);})
-      });
+      res.json({msg: 'hello will!'})
+      // res.json({
+      //   posts: posts.map((post, i) => {console.log(i);})
+      // });
     })
     .catch(err => {
       console.error(err);
