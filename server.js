@@ -35,23 +35,26 @@ app.get('/restaurants', (req, res) => {
       });
     })
     .catch(
-    err => {
-      console.error(err);
-      res.status(500).json({ message: 'Internal server error' });
-    });
+      err => {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+      });
 });
 
 
 app.get('/posts', (req, res) => {
-    console.log('Will Version');
+  console.log('Will Version');
   Post
     .find()
     .exec()
     .then(posts => {
-      res.json(posts)
-      // res.json({
-      //   posts: posts.map((post, i) => {console.log(i);})
-      // });
+      // res.json(posts)
+      res.json({
+        posts: posts.map((post, i) => {
+          console.log(i);
+          return post;
+        })
+      });
     })
     .catch(err => {
       console.error(err);
@@ -108,7 +111,7 @@ app.post('/restaurants', (req, res) => {
       address: req.body.address
     })
     .then(
-    restaurant => res.status(201).json(restaurant.apiRepr()))
+      restaurant => res.status(201).json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error' });
