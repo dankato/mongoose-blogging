@@ -8,9 +8,9 @@ mongoose.Promise = global.Promise;
 
 // config.js is where we control constants for entire
 // app like PORT and DATABASE_URL
-const {PORT, DATABASE_URL} = require('./config');
-const {Restaurant} = require('./models');
-
+const { PORT, DATABASE_URL } = require('./config');
+const { Restaurant } = require('./models');
+const { Post } = require('./models');
 const app = express();
 app.use(bodyParser.json());
 
@@ -34,9 +34,9 @@ app.get('/restaurants', (req, res) => {
       });
     })
     .catch(
-      err => {
-        console.error(err);
-        res.status(500).json({message: 'Internal server error'});
+    err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -47,9 +47,19 @@ app.get('/posts', (req, res) => {
     .limit(4)
     .exec()
     .then(posts => {
-      res.json('postman asdf');
+      res.json({
+        posts: posts.map(
+          (post) => post.apiRepr()
+        )
+      })
+        .catch(
+        err => {
+          console.log(err);
+          res.status(500).json({ message: 'You broke it' })
+        }
+        );
     });
-  
+
 });
 
 // can also request by ID
@@ -59,10 +69,10 @@ app.get('/restaurants/:id', (req, res) => {
     // by the object _id property
     .findById(req.params.id)
     .exec()
-    .then(restaurant =>res.json(restaurant.apiRepr()))
+    .then(restaurant => res.json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
-        res.status(500).json({message: 'Internal server error'})
+      res.status(500).json({ message: 'Internal server error' })
     });
 });
 
@@ -70,7 +80,7 @@ app.get('/restaurants/:id', (req, res) => {
 app.post('/restaurants', (req, res) => {
 
   const requiredFields = ['name', 'borough', 'cuisine'];
-  for (let i=0; i<requiredFields.length; i++) {
+  for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`
@@ -85,12 +95,13 @@ app.post('/restaurants', (req, res) => {
       borough: req.body.borough,
       cuisine: req.body.cuisine,
       grades: req.body.grades,
-      address: req.body.address})
+      address: req.body.address
+    })
     .then(
-      restaurant => res.status(201).json(restaurant.apiRepr()))
+    restaurant => res.status(201).json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
-      res.status(500).json({message: 'Internal server error'});
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -102,7 +113,7 @@ app.put('/restaurants/:id', (req, res) => {
       `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
     console.error(message);
-    res.status(400).json({message: message});
+    res.status(400).json({ message: message });
   }
 
   // we only support a subset of fields being updateable.
@@ -119,10 +130,10 @@ app.put('/restaurants/:id', (req, res) => {
 
   Restaurant
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .findByIdAndUpdate(req.params.id, { $set: toUpdate })
     .exec()
     .then(restaurant => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 app.delete('/restaurants/:id', (req, res) => {
@@ -130,12 +141,12 @@ app.delete('/restaurants/:id', (req, res) => {
     .findByIdAndRemove(req.params.id)
     .exec()
     .then(restaurant => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 // catch-all endpoint if client makes request to non-existent endpoint
-app.use('*', function(req, res) {
-  res.status(404).json({message: 'Not Found'});
+app.use('*', function (req, res) {
+  res.status(404).json({ message: 'Not Found' });
 });
 
 // closeServer needs access to a server object, but that only
@@ -144,7 +155,7 @@ app.use('*', function(req, res) {
 let server;
 
 // this function connects to our database, then starts the server
-function runServer(databaseUrl=DATABASE_URL, port=PORT) {
+function runServer(databaseUrl = DATABASE_URL, port = PORT) {
 
   return new Promise((resolve, reject) => {
     mongoose.connect(databaseUrl, err => {
@@ -155,10 +166,10 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
         console.log(`Your app is listening on port ${port}`);
         resolve();
       })
-      .on('error', err => {
-        mongoose.disconnect();
-        reject(err);
-      });
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
     });
   });
 }
@@ -167,15 +178,15 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
 // use it in our integration tests later.
 function closeServer() {
   return mongoose.disconnect().then(() => {
-     return new Promise((resolve, reject) => {
-       console.log('Closing server');
-       server.close(err => {
-           if (err) {
-               return reject(err);
-           }
-           resolve();
-       });
-     });
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
   });
 }
 
@@ -185,4 +196,4 @@ if (require.main === module) {
   runServer().catch(err => console.error(err));
 };
 
-module.exports = {app, runServer, closeServer};
+module.exports = { app, runServer, closeServer };
